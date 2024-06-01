@@ -1,0 +1,65 @@
+﻿@page "/employees/Edit/{id:int}"
+<PageTitle>Edit Info</PageTitle>
+
+<h3>EditEmployeeCompoenent</h3>
+@if (EmpObj != null)
+{
+    <EditForm Model="EmpObj" OnSubmit="Save">
+        <label>NAme</label>
+        <InputText class="form form-control" @bind-Value="EmpObj.Name"></InputText>
+
+        <label>Address</label>
+        <InputText class="form form-control" @bind-Value="EmpObj.Address"></InputText>
+
+        <label>Salary</label>
+        <InputNumber class="form form-control" @bind-Value="EmpObj.Salary"></InputNumber>
+
+        <label>Department</label>
+        <InputSelect class="form form-control" @bind-Value="EmpObj.DeptID">
+            @foreach (var DeptItem in DEptList)
+            {
+                <option value="@DeptItem.Id">@DeptItem.Name</option>
+            }
+        </InputSelect>
+
+        <input type="submit" class="btn btn-success" value="Save Update"/>
+    </EditForm>
+    @if (IsSave == true)
+    {
+        <h3 class="text-danger">Data Save Success</h3>
+    }
+}
+else
+{
+    <h1>Wait ... or id invalid</h1>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    public List<Department> DEptList { get; set; }
+
+    public Employee  EmpObj { get; set; }
+
+    [Inject]
+    public IServices<Employee> EmpService { get; set; }
+
+    [Inject]
+    public IServices<Department> DeptService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        EmpObj=await EmpService.GetByID(Id);
+        DEptList = await DeptService.GetAll();
+
+        base.OnInitializedAsync();
+    }
+    public bool IsSave { get; set; } = false;
+    private async Task Save()
+    {
+        await EmpService.Update(Id, EmpObj);
+        Console.WriteLine("SAved");
+        IsSave = true;
+    }
+}

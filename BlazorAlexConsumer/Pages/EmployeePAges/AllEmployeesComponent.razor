@@ -1,0 +1,42 @@
+﻿@page "/Employees"
+
+<PageTitle>All Employees</PageTitle>
+<h3>AllEmployeesComponent</h3>
+@if (EmpList != null)
+{
+    <table class="table table-hover table-bordered">
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>Name</th>
+        </tr>
+        @foreach (var item in EmpList)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Name</td>
+                <td><a href="employees/Details/@item.Id">Details</a></td>
+                <td><a href="employees/Edit/@item.Id">Edit</a></td>
+
+            </tr>
+        }
+    </table>
+}
+else
+{
+    <h1>Wait......</h1>
+}
+@code {
+    public List<Employee> EmpList { get; set; }
+
+    [Inject]
+    public IServices<Employee> EmpService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        EmpList =await EmpService.GetAll();
+        base.OnInitializedAsync();
+    }
+
+}
